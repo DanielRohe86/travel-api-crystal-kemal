@@ -1,17 +1,23 @@
-FROM crystallang/crystal:1.2.1
+FROM crystallang/crystal:1.2.0-alpine as builder
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y libsqlite3-dev
-
-COPY shard.yml ./
-
+COPY shard.yml .
+COPY shard.lock .
 RUN shards install
 
+COPY lib lib
 COPY src src
+RUN crystal build --release src/travel_plans.cr -o /app/travel_plans
 
-RUN crystal build --release src/travel_plans.cr
+FROM alpine:3.14.2
+
+WORKDIR /app
+COPY --from=builder /app/travel_plans /app
+
+# Install required dependencies
+RUN apk --no-cache add libgcc libstdc++ pcre
 
 EXPOSE 3000
 
-CMD ["./src/travel_plans"]
+CMD ["./travel_plans"]
