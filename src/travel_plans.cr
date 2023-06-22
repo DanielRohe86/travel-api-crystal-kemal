@@ -19,12 +19,18 @@ travel_plans = [] of Hash(String, JSON::Any)
 # end
 
 def get_travel_plans(base_url : String) : Array(String)?
-  url = "#{base_url}/travel-plans"
+  url = "#{base_url}/travel-plans" #travel-plans não existe. existe location
   response = HTTP::Client.get(url)
   
   if response.status_code == 200
-    puts response.to_s
-    JSON.parse(response.body.to_s).as(Array(String))
+    json = JSON.parse(response.body.to_s)
+
+    if json.is_a?(Array)
+      json.map(&.to_s).as(Array(String))
+    else
+      puts "Invalid response format. Expected an array."
+      nil
+    end
   else
     puts "Failed to retrieve travel plans."
     nil
