@@ -19,16 +19,19 @@ travel_plans = [] of Hash(String, JSON::Any)
 # end
 
 def get_travel_plans(base_url : String) : Array(String)?
-  url = "#{base_url}/travel-plans" #travel-plans não existe. existe location
+  url = "#{base_url}/location"
   response = HTTP::Client.get(url)
   
   if response.status_code == 200
     json = JSON.parse(response.body.to_s)
 
-    if json.is_a?(Array)
-      json.map(&.to_s).as(Array(String))
+    if json["results"].is_a?(Array(JSON::Any))
+      results = json["results"].as(Array(JSON::Any))
+      results.map(&.to_s).as(Array(String))
     else
       puts "Invalid response format. Expected an array."
+      puts "Actual response body:"
+      puts response.body.to_s
       nil
     end
   else
@@ -36,6 +39,9 @@ def get_travel_plans(base_url : String) : Array(String)?
     nil
   end
 end
+
+
+
 
 # post "/travel-plans" do |env|
 #   env.response.content_type = "application/json"
