@@ -18,30 +18,6 @@ travel_plans = [] of Hash(String, JSON::Any)
 #   end
 # end
 
-def get_travel_plans(base_url : String) : Array(String)?
-  url = "#{base_url}/location"
-  response = HTTP::Client.get(url)
-  
-  if response.status_code == 200
-    json = JSON.parse(response.body.to_s)
-
-    if json["results"].is_a?(Array(JSON::Any))
-      results = json["results"].as(Array(JSON::Any))
-      results.map(&.to_s).as(Array(String))
-    else
-      puts "Invalid response format. Expected an array."
-      puts "Actual response body:"
-      puts response.body.to_s
-      nil
-    end
-  else
-    puts "Failed to retrieve travel plans."
-    nil
-  end
-end
-
-
-
 
 # post "/travel-plans" do |env|
 #   env.response.content_type = "application/json"
@@ -54,12 +30,25 @@ end
 #   travel_plan.to_json
 # end
 
-get "/travel-plans" do |env|
-  env.response.content_type = "application/json"
-  env.response.status_code = 200
-  travel_plans.to_json
+def get_travel_plans(base_url : String) : JSON::Any?
+  url = "#{base_url}/location"
+  response = HTTP::Client.get(url)
+
+  if response.status_code == 200
+    json = JSON.parse(response.body.to_s)
+    puts json.to_pretty_json
+    json
+  else
+    puts "Failed to retrieve travel plans."
+    nil
+  end
 end
 
+# get "/travel-plans" do |env|
+#   env.response.content_type = "application/json"
+#   env.response.status_code = 200
+#   travel_plans.to_json
+# end
 
 Kemal.run do
   base_url = "https://rickandmortyapi.com/api"
@@ -71,8 +60,51 @@ Kemal.run do
   # end
 
   all_plans = get_travel_plans(base_url)
-  if all_plans
-    puts "All Travel Plans:"
-    puts all_plans.to_pretty_json
-  end
+  # if all_plans
+  #   puts "All Travel Plans:"
+  #   puts all_plans.to_pretty_json
+  # end
 end
+
+# Parte após print no terminal
+
+# require "json"
+# require "kemal"
+# require "http/client"
+
+# travel_plans = [] of Hash(String, JSON::Any)
+
+# def fetch_location_details(location_id : Int32) : JSON::Any
+#   response = HTTP::Client.get("https://rickandmortyapi.com/api/location/#{location_id}")
+#   JSON.parse(response.body)
+# end
+
+# get "/travel-plans" do |env|
+#   optimize = env.params.get("optimize")?.to_b
+#   expand = env.params.get("expand")?.to_b
+
+#   if optimize
+#     # Code for optimizing the travel stops array goes here
+#   end
+
+#   if expand
+#     travel_plans.each do |plan|
+#       plan["travel_stops"].map! do |location_id|
+#         fetch_location_details(location_id)
+#       end
+#     end
+#   end
+
+#   env.response.content_type = "application/json"
+#   env.response.status_code = 200
+#   env.response.print travel_plans.to_json
+# end
+
+# Kemal.run do
+#   base_url = "https://rickandmortyapi.com/api"
+
+#   all_plans = get_travel_plans(base_url)
+#   if all_plans
+#     travel_plans = all_plans.map { |plan| {"id" => plan["id"].to_i, "travel_stops" => plan["travel_stops"]} }
+#   end
+# end
