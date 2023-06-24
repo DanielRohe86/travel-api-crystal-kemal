@@ -6,17 +6,11 @@ module Api
  
   post "/travel-plans/:id" do |context|
     id = context.params.url["id"]    
-    travel_array = context.params.body["travel_array"]
-    "#{id}: #{travel_array}"
-    # if !travel_array
-    #   error = {message: "must give"}.to_json
-    #   halt context, status_code: 403, response: error
-    # end
-  
-  #   { id: "#{id}",
-  #   travel_stops: "#{travel_array}"
-  
-  # }     
+    travel_stops = context.params.json["travel_stops"]
+    "{
+      id: #{id},
+    travel_stops: #{travel_stops}
+    }"    
   end
 end
 
