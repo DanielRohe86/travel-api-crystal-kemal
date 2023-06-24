@@ -10,3 +10,23 @@ description: |
 dependencies:
   kemal:
     github: kemalcr/kemal
+    # version: "1.1.0" # Replace with a compatible version
+  mysql:
+    github: crystal-lang/crystal-mysql
+  json:
+    github: crystal-lang/crystal
+    version: "~> 0.32.1" # Replace with a compatible version range
+
+targets:
+  api:
+      main: src/travel_plans_crud.cr
+
+crystal: 1.3.1
+
+development_dependencies:
+  db:
+    github: crystal-lang/crystal-db
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+  spec-kemal:
+    github: kemalcr/spec-kemal

@@ -8,16 +8,19 @@ RUN shards install
 
 COPY lib lib
 COPY src src
-RUN crystal build --release src/travel_plans.cr -o /app/travel_plans
+COPY src/model src/model
+RUN crystal build --release src/travel_plans_fetch.cr -o /app/travel_plans_fetch
+RUN crystal build --release src/travel_plans_crud.cr -o /app/travel_plans_crud
 
 FROM alpine:3.14.2
 
 WORKDIR /app
-COPY --from=builder /app/travel_plans /app
+COPY --from=builder /app/travel_plans_fetch /app/travel_plans_fetch
+COPY --from=builder /app/travel_plans_crud /app/travel_plans_crud
 
-# Install required dependencies
 RUN apk --no-cache add libgcc libstdc++ pcre
 
 EXPOSE 3000
 
-CMD ["./travel_plans"]
+CMD tail -f /dev/null
+
