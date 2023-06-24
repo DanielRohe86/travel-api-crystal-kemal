@@ -10,8 +10,9 @@ module Api
     # id = context.params.url["id"] source for id retrieved from /:id
     @@last_id += 1
     id = @@last_id.to_s
-    
+
     travel_stops = context.params.json["travel_stops"]
+    context.response.status_code = 201    
     "{
       id: #{id},
     travel_stops: #{travel_stops}
