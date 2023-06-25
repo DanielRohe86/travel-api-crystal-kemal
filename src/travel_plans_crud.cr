@@ -1,6 +1,6 @@
 require "kemal"
 # require "json"
-# require "./travel_plans_fetch.cr"
+require "./travel_plans_fetch.cr"
 
 module Api
   VERSION = "0.1.0"
@@ -25,6 +25,7 @@ module Api
   end
 
   get "/travel-plans" do |context|
+    expand = context.params.query["expand"]
     context.response.headers["Content-Type"] = "application/json"
     context.response.status_code = 200
 
